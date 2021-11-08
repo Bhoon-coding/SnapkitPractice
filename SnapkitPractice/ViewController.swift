@@ -20,11 +20,9 @@ class HomeViewController: UIViewController {
     lazy var logoImage = UIImage(named: "Logo")
     lazy var logoButton: UIButton = {
         let btn = UIButton(type: .system) // system을 하면 버튼 클릭효과
-        btn.setTitle("Button", for: .normal)
+        btn.setTitle("PAPRICACARE", for: .normal)
         btn.setTitleColor(#colorLiteral(red: 1, green: 0.5401045084, blue: 0.2833312452, alpha: 1), for: .normal)
         btn.titleLabel?.font = UIFont.boldSystemFont(ofSize: 24)
-        btn.backgroundColor = .darkGray
-        btn.layer.cornerRadius = 16
         return btn
     }()
     
@@ -46,6 +44,20 @@ class HomeViewController: UIViewController {
         btn.layer.cornerRadius = 16
         return btn
     }()
+    
+    lazy var mainView: UIView = {
+        let view = UIView()
+        view.backgroundColor = #colorLiteral(red: 1, green: 0.5401045084, blue: 0.2833312452, alpha: 1)
+        return view
+    }()
+    
+    lazy var mainViewLabel: UILabel = {
+        let label = UILabel()
+        label.text = "MAIN View"
+        label.textColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+        label.font = UIFont.boldSystemFont(ofSize: 24)
+        return label
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -56,15 +68,33 @@ class HomeViewController: UIViewController {
     
     func setLogoUI() {
         // Logo 뷰
+       
+        // mainView
+        self.view.addSubview(mainView)
+        self.mainView.addSubview(mainViewLabel)
         
+        // blockView
         self.view.addSubview(blockView)
         self.blockView.addSubview(blockViewButton)
+        
+        // coverView
         self.view.addSubview(coverView)
         self.coverView.addSubview(imageView)
         self.coverView.addSubview(logoButton)
-    
-        blockView.snp.makeConstraints {
+        
+        // mainView 위치 잡기
+        mainView.snp.makeConstraints {
             $0.edges.equalToSuperview()
+        }
+        
+        mainViewLabel.snp.makeConstraints {
+            $0.bottom.equalTo(mainView.snp.bottom)
+            $0.center.equalTo(mainView)
+        }
+        
+        // blockView 위치 잡기
+        blockView.snp.makeConstraints {
+            $0.size.equalToSuperview()
         }
         
         blockViewButton.snp.makeConstraints {
@@ -75,10 +105,10 @@ class HomeViewController: UIViewController {
             blockViewButton.addTarget(self, action: #selector(hideBlockView), for: .touchUpInside)
         }
         
+        // coverView 위치 잡기
         coverView.snp.makeConstraints {
-            $0.edges.equalTo(blockView.snp.edges)
+            $0.size.equalToSuperview()
             self.logoViewLeadingConstraint = $0.left.equalToSuperview().offset(0).constraint
-//            self.logoViewLeadingConstraint = $0.left.equalTo(self.blueView.snp.left).inset(0).constraint // << .constraint로 현재 constarint를 가져온다.
         }
         
         imageView.image = logoImage
@@ -91,31 +121,28 @@ class HomeViewController: UIViewController {
             $0.bottom.equalTo(coverView.snp.bottom)
             $0.centerX.equalTo(coverView)
             $0.size.equalTo(CGSize(width: 200, height: 50))
-//            logoButton.addTarget(self, action: #selector(moveLogoView), for: .touchUpInside)
-            logoButton.addTarget(self, action: #selector(hideLogoView), for: .touchUpInside)
+            logoButton.addTarget(self, action: #selector(moveLogoView), for: .touchUpInside)
         }
         
     }
     
     // LogoView 하단 버튼 클릭시 오른쪽으로 이동
-//    var Offset = 0
-//
-//    @objc fileprivate func hideLogoView() {
-//        print("offset is ===> ", Offset)
-//        Offset += 70
-//        self.logoViewLeadingConstraint?.update(offset: Offset)
-//
-//    }
-    
-    // LogoView의 모든 요소들을 숨김 (로고뷰, 로고 이미지, 버튼)
-        @objc fileprivate func hideLogoView() {
-            self.coverView.isHidden = true
-            self.blockView.isHidden = false
+    var Offset = 0
+
+    @objc fileprivate func moveLogoView() {
+        Offset += 200
+        self.logoViewLeadingConstraint?.update(offset: Offset)
+        self.blockView.isHidden = false
+        if Offset > 300 {
+            coverView.isHidden = true
         }
+
+    }
     
     @objc fileprivate func hideBlockView() {
         self.blockView.isHidden = true
-        self.coverView.isHidden = false
+        Offset = 0
+        self.logoViewLeadingConstraint?.update(offset: Offset)
     }
 }
 
